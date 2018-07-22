@@ -14,6 +14,7 @@ export default {
   @import './styles/main.scss';
   @import './styles/_variables.scss';
   @import './styles/slickgrid.scss';
+  @import '../node_modules/bootstrap/scss/bootstrap.scss';
   #app {
     min-height: 100%;
     background-position: center;
