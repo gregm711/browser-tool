@@ -11,11 +11,14 @@ export default {
 </script>
 
 <style lang='scss'>
-  @import './styles/main.scss';
   @import './styles/_variables.scss';
   @import './styles/slickgrid.scss';
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
   #app {
+    input[type=checkbox]
+      {
+          -webkit-appearance:checkbox;
+    }
     min-height: 100%;
     background-position: center;
     background-size: cover;

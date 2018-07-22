@@ -1,12 +1,20 @@
 <template>
   <div class="table-viewer">
     <div class="container">
+
+
   <div class="columns">
     <div class="menu-container column">
       <div class="menu"></div>
     </div>
     <div class="demo column is-two-thirds">
-      <div id="myGrid" style="width:100%;height:600px;" class="slickgrid-container"></div>
+      <div class="column-dists-wrapper">
+        <div v-for="(i, dist) in distributions" class="column-dist">
+          {{encodings[i]}}
+        <!-- <vega-lite :data="distributions[i]" mark="bar"  :encoding="encodings[i]"/> -->
+      </div>
+      </div>
+      <div id="myGrid" style="height:600px;" class="slickgrid-container"></div>
     </div>
     <div class="controls column"></div>
   </div>
@@ -27,11 +35,18 @@ export default {
   props: {
   rows: Array,
   columns: Array,
+  distributions: Array,
+  encodings: Array,
 },
 watch: {
     rows: function (val) {
       console.log("new values")
       this.createSlickGridTable();
+    },
+    distributions: function (val) {
+      console.log("new distributions")
+      console.log(this.encodings[0])
+
     }
   },
 
@@ -41,17 +56,17 @@ watch: {
         forceFitColumns: false,
         fullWidthRows: true,
         showHeaderRow: true,
+        defaultColumnWidth: 200,
         };
     var positions = this.rows;
     var columns = this.columns;
     var formattedColumns = [];
     for (var i =0; i < columns.length; i++){
-      var dict = {name: columns[i],  field: columns[i],  id: columns[i],  selectable: true }
+      var dict = {name: columns[i],  field: columns[i],  id: columns[i],  selectable: true, sortable: true, }
       formattedColumns.push(dict)
     }
         const grid = new Grid('#myGrid', positions, formattedColumns, options);
-
-    }
+    },
 
   },
 
@@ -63,11 +78,29 @@ watch: {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped="true">
 .table-viewer{
-  width: 70%;
+  // width: 90%;
   margin: 0 auto;
   margin-top: 8rem;
+  .column-dists-wrapper {
+    width:100%;
+   height:200px;
+   overflow:scroll;
+   white-space: nowrap;
 
+  .column-dist{
+    display:inline-block;
+    width:200px;
+    height:200px;
+    border:1px solid;
+    line-height:80px;
+    text-align:center;
+    margin-bottom:4px;
+
+  }
+  }
 }
+
+
 
 
 </style>
