@@ -9,9 +9,8 @@
     </div>
     <div class="demo column is-two-thirds">
       <div class="column-dists-wrapper">
-        <div v-for="(i, dist) in distributions" class="column-dist">
-          {{encodings[i]}}
-        <!-- <vega-lite :data="distributions[i]" mark="bar"  :encoding="encodings[i]"/> -->
+        <div v-for="(value, i) in distributions" class="column-dist">
+        <vega-lite :data="distributions[i]" mark="bar"  :encoding="encodings[i]"/>
       </div>
       </div>
       <div id="myGrid" style="height:600px;" class="slickgrid-container"></div>
@@ -45,7 +44,6 @@ watch: {
     },
     distributions: function (val) {
       console.log("new distributions")
-      console.log(this.encodings[0])
 
     }
   },
@@ -56,7 +54,7 @@ watch: {
         forceFitColumns: false,
         fullWidthRows: true,
         showHeaderRow: true,
-        defaultColumnWidth: 200,
+        defaultColumnWidth: 400,
         };
     var positions = this.rows;
     var columns = this.columns;
@@ -83,13 +81,13 @@ watch: {
   margin-top: 8rem;
   .column-dists-wrapper {
     width:100%;
-   height:200px;
+   height:400px;
    overflow:scroll;
    white-space: nowrap;
 
   .column-dist{
     display:inline-block;
-    width:200px;
+    width:400px;
     height:200px;
     border:1px solid;
     line-height:80px;

@@ -96,7 +96,7 @@ export default {
 
     createDistributions(){
         var newDistributions = [];
-        console.log("gettings dists")
+
         var newEncodings = [];
         for (var i =0; i < this.columns.length; i++){
 
@@ -104,20 +104,28 @@ export default {
           var contents = this.db.exec(groupQuery);
           var rows = contents[0].values
 
-          // for (var j = 0; j < rows.length; j++) {
-            var vals = [
-              {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43},
-              {a: 'D', b: 91}, {a: 'E', b: 81}, {a: 'F', b: 53},
-              {a: 'G', b: 19}, {a: 'H', b: 87}, {a: 'I', b: 52}
-            ]
+
+          var newData = [];
+
+          for (var j = 0; j < rows.length; j++) {
+
+            var entry = {a: rows[j][0], b: rows[j][1]}
+            newData.push(entry)
+          }
+          console.log("got new data")
+          console.log(newData)
+            // var vals = [
+            //   {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43},
+            //   {a: 'D', b: 91}, {a: 'E', b: 81}, {a: 'F', b: 53},
+            //   {a: 'G', b: 19}, {a: 'H', b: 87}, {a: 'I', b: 52}
+            // ]
 
             var encoding = {
                 x: {field: 'a', type: 'ordinal'},
                 y: {field: 'b', type: 'quantitative'}
               }
 
-
-          newDistributions.push(vals)
+          newDistributions.push(newData)
           newEncodings.push(encoding)
 
 
