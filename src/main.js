@@ -6,6 +6,9 @@ import router from './router'
 
 import BootstrapVue from 'bootstrap-vue'
 import VueVega from 'vue-vega'
+import Papa from 'papaparse'
+
+Vue.use(Papa);
 
 Vue.use(VueVega)
 

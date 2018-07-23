@@ -8,11 +8,11 @@
       <div class="menu"></div>
     </div>
     <div class="demo column is-two-thirds">
-      <div class="column-dists-wrapper">
+      <!-- <div class="column-dists-wrapper">
         <div v-for="(value, i) in distributions" class="column-dist">
         <vega-lite :data="distributions[i]" mark="bar"  :encoding="encodings[i]"/>
       </div>
-      </div>
+      </div> -->
       <div id="myGrid" style="height:600px;" class="slickgrid-container"></div>
     </div>
     <div class="controls column"></div>
@@ -54,7 +54,7 @@ watch: {
         forceFitColumns: false,
         fullWidthRows: true,
         showHeaderRow: true,
-        defaultColumnWidth: 400,
+        defaultColumnWidth: 100,
         };
     var positions = this.rows;
     var columns = this.columns;
@@ -67,27 +67,23 @@ watch: {
     },
 
   },
-
-
-
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped="true">
 .table-viewer{
-  // width: 90%;
+  float: left;
+  width: 70%;
   margin: 0 auto;
-  margin-top: 8rem;
   .column-dists-wrapper {
     width:100%;
    height:400px;
    overflow:scroll;
    white-space: nowrap;
-
   .column-dist{
     display:inline-block;
-    width:400px;
+    width:100px;
     height:200px;
     border:1px solid;
     line-height:80px;

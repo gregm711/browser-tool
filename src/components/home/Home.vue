@@ -1,9 +1,10 @@
 <template>
     <div class="home">
         <h1>Upload EXWRK csv</h1>
-        <div style="margin-top: 3rem;"></div>
+        <div style="margin-top: 3rem;">
 
-        <input id="fileInput" class="input" type="file" @change="upload" style="padding: 2rem;">
+        <input id="fileInput" class="input" type="file" @change="upload" style="padding: 2rem; margin: 0 auto;">
+      </div>
         <div class="wrapper" v-if="this.rows.length > 0">
         <div class="input-group mb-3">
             <input type="text" class="form-control" placeholder="Enter SQL Query" aria-label="SQL Query" v-model="query" aria-describedby="basic-addon2">
@@ -17,10 +18,17 @@
                 <button class="btn btn-outline-secondary" type="button">Enter the correct slope</button>
             </div>
         </div>
-        <div>
-          <h4>Please select from the available columns</h4>
+        <div class="column-selector-container">
+          <h4>Shown Columns</h4>
             <b-form-group >
-                <b-form-checkbox-group style="text-align: left;" v-model="selected" name="columns-selected" :options="columns">
+                <b-form-checkbox-group stacked style="text-align: left;" v-model="selected" name="columns-selected" :options="options">
+                </b-form-checkbox-group>
+            </b-form-group>
+        </div>
+        <div class="column-selector-container">
+          <h4>Group by</h4>
+            <b-form-group >
+                <b-form-checkbox-group stacked style="text-align: left;" v-model="grouped" name="columns-selected" :options="options">
                 </b-form-checkbox-group>
             </b-form-group>
         </div>
@@ -49,11 +57,14 @@ export default {
       'CREATED_DT_TS',	'UPDATED_USER_ID',	'UPDATED_DT_TS',	'WKR_LIST_COMMENT'],
       distributions: [],
       encodings: [],
+      options: [],
+      grouped: []
     }
   },
 
   watch: {
       selected: function (val) {
+
         var query = "SELECT ";
         if (this.selected.length != this.columns.length) {
         this.selected.forEach((elem) =>{
@@ -63,7 +74,20 @@ export default {
         query += " FROM tableName";
         query = query.replace(/,\s*$/, "");
         this.executeQuery(query)
-        };
+      }
+      },
+      grouped: function (val) {
+
+        var query = "SELECT ";
+        if (this.selected.length != this.columns.length) {
+        this.selected.forEach((elem) =>{
+          query += elem + ", ";
+        })
+        query = query.slice(0, -2);
+        query += " FROM tableName";
+        query = query.replace(/,\s*$/, "");
+        this.executeQuery(query)
+      }
       },
       rows: function (val) {
         this.createDistributions();
@@ -80,9 +104,16 @@ export default {
         reader.onload = fileLoadedEvent => {
             Papa.parse(fileLoadedEvent.target.result, {
                 header: true,
+                fastMode: true,
                 dynamicTyping: true,
 
+                step: function(results, parser) {
+                	console.log("Row data:", results.data);
+                	console.log("Row errors:", results.errors);
+                },
+
                 complete(results) {
+                  console.log("done")
                     that.rows = results.data
                     that.createDB(results.data)
                 },
@@ -95,45 +126,32 @@ export default {
     },
 
     createDistributions(){
-        var newDistributions = [];
-
-        var newEncodings = [];
-        for (var i =0; i < this.columns.length; i++){
-
-          var groupQuery = "SELECT " + this.columns[i] + ",  COUNT(*) FROM  tableName GROUP BY " + this.columns[i] + ";"
-          var contents = this.db.exec(groupQuery);
-          var rows = contents[0].values
-
-
-          var newData = [];
-
-          for (var j = 0; j < rows.length; j++) {
-
-            var entry = {a: rows[j][0], b: rows[j][1]}
-            newData.push(entry)
-          }
-          console.log("got new data")
-          console.log(newData)
-            // var vals = [
-            //   {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43},
-            //   {a: 'D', b: 91}, {a: 'E', b: 81}, {a: 'F', b: 53},
-            //   {a: 'G', b: 19}, {a: 'H', b: 87}, {a: 'I', b: 52}
-            // ]
-
-            var encoding = {
-                x: {field: 'a', type: 'ordinal'},
-                y: {field: 'b', type: 'quantitative'}
-              }
-
-          newDistributions.push(newData)
-          newEncodings.push(encoding)
-
-
-        }
-
-
-        this.distributions = newDistributions;
-        this.encodings = newEncodings;
+      // SELECT " + this.columns[i] + ",  COUNT(*) FROM  tableName GROUP BY
+        // var newDistributions = [];
+        //
+        // var newEncodings = [];
+        // for (var i =0; i < this.columns.length; i++){
+        //   var groupQuery = "SELECT " + this.columns[i] + ",  COUNT(*) FROM  tableName GROUP BY " + this.columns[i] + ";"
+        //   var contents = this.db.exec(groupQuery);
+        //   var rows = contents[0].values
+        //   var newData = [];
+        //   for (var j = 0; j < rows.length; j++) {
+        //     var entry = {a: rows[j][0], b: rows[j][1]}
+        //     newData.push(entry)
+        //   }
+        //     var encoding = {
+        //         x: {field: 'a', type: 'ordinal'},
+        //         y: {field: 'b', type: 'quantitative'}
+        //       }
+        //   newDistributions.push(newData)
+        //   newEncodings.push(encoding)
+        //
+        //
+        // }
+        //
+        //
+        // this.distributions = newDistributions;
+        // this.encodings = newEncodings;
 
     },
 
@@ -162,7 +180,6 @@ export default {
         })
         this.db.run(sqlstr);
     },
-
     executeQuery(query) {
         var contents = this.db.exec(query);
         var newData = [];
@@ -180,23 +197,15 @@ export default {
         }
         this.rows = newDataArr;
         this.columns  = columns;
+
     },
   },
 
   mounted: function () {
-
-    // SELECT
-  //  SUPLR_NO,
-  //  COUNT(PRT_TYPE)
-  // FROM
-  //  tableName
-  // GROUP BY
-  //  SUPLR_NO;
-    // SELECT SUPLR_NO COUNT(PRT_TYPE), FROM tableName GROUP BY SUPLR_NO
-    // SELECT key1, key2, COUNT(id) FROM tableName GROUP BY key1, key2 ORDER BY key1, key2
-    // SELECT key1, key2, COUNT(id) FROM tableName GROUP BY key1, key2 ORDER BY key1, key2
     for (var i = 0; i < this.columns.length; i++){
+
       this.selected.push(this.columns[i])
+      this.options.push({text: this.columns[i], value: this.columns[i]})
       }
     },
 }
@@ -208,14 +217,13 @@ export default {
   margin: 0 auto;
    text-align: center;
    padding: 2rem;
+   .column-selector-container{
+     border: solid  1px grey;
+     float: right;
+   }
 }
 
-.column-picker{
-  -webkit-appearance: none;
-  .checkbox{
-  display: inline;
-}
-}
+
 
 
 </style>
